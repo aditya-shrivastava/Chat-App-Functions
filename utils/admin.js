@@ -1,9 +1,9 @@
 const admin = require('firebase-admin');
-var serviceAcount = require('./native-chat-app-43424-firebase-adminsdk-88hhf-2b1c38173c.json');
+var serviceAcount = require('path to json file');
 
 admin.initializeApp({
 	credential: admin.credential.cert(serviceAcount),
-	databaseURL: 'https://native-chat-app-43424.firebaseio.com',
+	databaseURL: 'database url',
 });
 
 const db = admin.firestore();
