@@ -7,13 +7,13 @@ const cors = require('cors');
 const { db } = require('./utils/admin');
 
 // Import user functions
-const { helloWorld } = require('./handlers/users');
+const { signIn } = require('./handlers/users');
 
 const app = express();
 app.use(cors());
 
 // User Routes
-app.get('/signin', helloWorld);
+app.get('/signin', signIn);
 
 
 exports.api = functions.region('asia-east2').https.onRequest(app);

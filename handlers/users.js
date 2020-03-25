@@ -6,6 +6,10 @@ const { db, admin } = require('../utils/admin');
 
 firebase.initializeApp(firebaseConfig);
 
-exports.helloWorld = (req, res) => {
-	return res.status(200).json({ message: 'Response from Server' });
+// exports.helloWorld = (req, res) => {
+// 	return res.status(200).json({ message: 'Response from Server' });
+// }
+
+exports.signIn = (req, res) => {
+	return res.status(200).json({ message: 'User created successfully' });
 }
