@@ -9,11 +9,16 @@ const { db } = require('./utils/admin');
 // Import user functions
 const { signIn } = require('./handlers/users');
 
+// Import chat functions
+const { getMessages } = require('./handlers/messages');
+
 const app = express();
 app.use(cors());
 
 // User Routes
-app.get('/signin', signIn);
+app.post('/signin', signIn);
 
+// Message Routes
+app.get('/messages', getMessages);
 
 exports.api = functions.region('asia-east2').https.onRequest(app);
