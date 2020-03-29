@@ -7,7 +7,7 @@ const cors = require('cors');
 const { db } = require('./utils/admin');
 
 // Import user functions
-const { signIn } = require('./handlers/users');
+const { signIn, getUsers } = require('./handlers/users');
 
 // Import chat functions
 const { getMessages } = require('./handlers/messages');
@@ -17,6 +17,7 @@ app.use(cors());
 
 // User Routes
 app.post('/signin', signIn);
+app.get('/users', getUsers);
 
 // Message Routes
 app.get('/messages', getMessages);

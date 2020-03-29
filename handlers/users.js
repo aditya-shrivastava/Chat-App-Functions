@@ -30,3 +30,21 @@ exports.signIn = (req, res) => {
 			return res.status(500).json({ message: 'Something went wrong, please try again' });
 		})
 }
+
+exports.getUsers = (req, res) => {
+	let users = [];
+	db.collection('/users').get()
+		.then(data => {
+			data.forEach(doc => {
+				let user = {
+					name: doc.data().name,
+					photoURL: doc.data().photoURL
+				}
+				users.push(user);
+			})
+			return res.status(200).json(users);
+		})
+		.catch(err => {
+			return res.status(500).json({ error: err.code })
+		})
+}
