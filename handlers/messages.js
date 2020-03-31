@@ -13,7 +13,7 @@ exports.getMessages = (req, res) => {
 					messageId: doc.id,
 					body: doc.data().body,
 					uid: doc.data().uid,
-					userName: doc.data().userName
+					userName: doc.data().userName,
 				})
 			})
 			return res.status(200).json(messages);
