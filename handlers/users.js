@@ -3,10 +3,12 @@ const firebase = require('firebase');
 const firebaseConfig = require('../utils/firebaseConfig');
 const { db, admin } = require('../utils/admin');
 
-
+// initialize firebase
 firebase.initializeApp(firebaseConfig);
 
+// Store user credentials in database
 exports.signIn = (req, res) => {
+	// create user object
 	const uid = req.body.uid;
 	const user = {
 		name: req.body.displayName,
@@ -15,6 +17,8 @@ exports.signIn = (req, res) => {
 		uid
 	}
 	// console.log(req.body);
+	// check if user already exists in database
+	// if not then add the credentials
 	db.doc(`/users/${uid}`)
 		.get()
 		.then(doc => {
@@ -31,7 +35,9 @@ exports.signIn = (req, res) => {
 		})
 }
 
+// fetch all users present in database
 exports.getUsers = (req, res) => {
+	// create list of users and return it
 	let users = [];
 	db.collection('/users').get()
 		.then(data => {
