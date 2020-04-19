@@ -1,5 +1,6 @@
 const firebase = require('firebase');
 const { db, admin } = require('../utils/admin');
+const BusBoy = require('busboy');
 
 // fetch all the messages
 exports.getMessages = (req, res) => {
@@ -46,3 +47,9 @@ exports.sendMessage = (req, res) => {
 			return res.status(500).json({ error: 'Something went wrong' });
 		});
 };
+
+// send media files
+exports.sendMedia = (req, res) => {
+	// create new media message
+
+}
