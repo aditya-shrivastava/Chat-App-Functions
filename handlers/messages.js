@@ -51,5 +51,5 @@ exports.sendMessage = (req, res) => {
 // send media files
 exports.sendMedia = (req, res) => {
 	// create new media message
-
+	// console.log('Reached');
 }
