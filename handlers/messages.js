@@ -1,6 +1,10 @@
 const firebase = require('firebase');
+const firebaseConfig = require('../utils/firebaseConfig');
 const { db, admin } = require('../utils/admin');
 const BusBoy = require('busboy');
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
 
 // fetch all the messages
 exports.getMessages = (req, res) => {
@@ -15,6 +19,7 @@ exports.getMessages = (req, res) => {
 					messageId: doc.id,
 					body: doc.data().body,
 					uid: doc.data().uid,
+					type: doc.data().type,
 					userName: doc.data().userName,
 				})
 			})
@@ -32,6 +37,7 @@ exports.sendMessage = (req, res) => {
 		body: req.body.body,
 		userName: req.body.userName,
 		uid: req.body.senderId,
+		type: req.body.type,
 		sent: new Date().toISOString()
 	}
 
@@ -52,4 +58,40 @@ exports.sendMessage = (req, res) => {
 exports.sendMedia = (req, res) => {
 	// create new media message
 	// console.log('Reached');
+	const busboy = new BusBoy({ headers: req.headers });
+
+	let uploadData = null;
+	let fileName;
+
+	busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
+		
+		const ext = filename.split('.')[filename.split('.').length-1];
+		fileName = `${Math.round(Math.random() * 1000000000000000)}.${ext}`;
+
+		const filepath = path.join(os.tmpdir(), fileName);
+		uploadData = { filepath, mimetype};
+		file.pipe(fs.createWriteStream(filepath));
+	});
+
+	busboy.on('finish', () => {
+		admin.storage()
+			.bucket()
+			.upload(uploadData.filepath, {
+				resumable: false,
+				metadata: {
+					metadata: {
+						contentType: uploadData.mimetype
+					}
+				}
+			})
+			.then(() => {
+				const imageUrl = `https://firebasestorage.googleapis.com/v0/b/native-chat-app-43424.appspot.com/o/${fileName}?alt=media`;
+				res.status(200).json({ imageUrl });
+			})
+			.catch(err => {
+				res.status(500).json({ err });
+			})
+	})
+
+	busboy.end(req.rawBody);
 }
