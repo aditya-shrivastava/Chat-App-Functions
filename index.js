@@ -10,7 +10,7 @@ const { db } = require('./utils/admin');
 const { signIn, getUsers } = require('./handlers/users');
 
 // Import chat functions
-const { getMessages, sendMessage, sendMedia } = require('./handlers/messages');
+const { getMessages, sendMessage, sendMedia, getNewMessages } = require('./handlers/messages');
 
 const app = express();
 app.use(cors());
@@ -23,5 +23,6 @@ app.get('/users', getUsers);
 app.get('/messages', getMessages);
 app.post('/message', sendMessage);
 app.post('/media', sendMedia);
+app.get('/new', getNewMessages);
 
 exports.api = functions.region('asia-east2').https.onRequest(app);
