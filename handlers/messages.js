@@ -27,8 +27,33 @@ exports.getMessages = (req, res) => {
 		})
 		.catch(err => {
 			return res.status(500).json({ error: err.code });
-	})
+		});
 };
+
+// fetch only the unread messages
+exports.getNewMessages = (req, res) => {
+	db.collection('messages')
+		.where('read', '==', false)
+		.get()
+		.then(data => {
+			let messages = [];
+			data.forEach(doc => {
+				messages.push({
+					messageId: doc.id,
+					body: doc.data().body,
+					uid: doc.data().uid,
+					type: doc.data().type,
+					userName: doc.data().userName,
+				})
+
+				db.doc(`/messages/${doc.id}`).update({ read: true });
+			})
+			return res.status(200).json(messages);
+		})
+		.catch(err => {
+			return res.status(500).json({ err: err.code });
+		})
+}
 
 // send a message
 exports.sendMessage = (req, res) => {
@@ -38,7 +63,8 @@ exports.sendMessage = (req, res) => {
 		userName: req.body.userName,
 		uid: req.body.senderId,
 		type: req.body.type,
-		sent: new Date().toISOString()
+		sent: new Date().toISOString(),
+		read: false
 	}
 
 	// add the message to messages collection and return the result
@@ -54,10 +80,8 @@ exports.sendMessage = (req, res) => {
 		});
 };
 
-// send media files
+// upload media files
 exports.sendMedia = (req, res) => {
-	// create new media message
-	// console.log('Reached');
 	const busboy = new BusBoy({ headers: req.headers });
 
 	let uploadData = null;
@@ -65,7 +89,7 @@ exports.sendMedia = (req, res) => {
 
 	busboy.on('file', (fieldname, file, filename, encoding, mimetype) => {
 		
-		const ext = filename.split('.')[filename.split('.').length-1];
+		ext = filename.split('.')[filename.split('.').length-1];
 		fileName = `${Math.round(Math.random() * 1000000000000000)}.${ext}`;
 
 		const filepath = path.join(os.tmpdir(), fileName);
@@ -85,8 +109,8 @@ exports.sendMedia = (req, res) => {
 				}
 			})
 			.then(() => {
-				const imageUrl = `https://firebasestorage.googleapis.com/v0/b/native-chat-app-43424.appspot.com/o/${fileName}?alt=media`;
-				res.status(200).json({ imageUrl });
+				const mediaUrl = `https://firebasestorage.googleapis.com/v0/b/native-chat-app-43424.appspot.com/o/${fileName}?alt=media`;
+				res.status(200).json({ mediaUrl });
 			})
 			.catch(err => {
 				res.status(500).json({ err });
