@@ -30,31 +30,6 @@ exports.getMessages = (req, res) => {
 		});
 };
 
-// fetch only the unread messages
-exports.getNewMessages = (req, res) => {
-	db.collection('messages')
-		.where('read', '==', false)
-		.get()
-		.then(data => {
-			let messages = [];
-			data.forEach(doc => {
-				messages.push({
-					messageId: doc.id,
-					body: doc.data().body,
-					uid: doc.data().uid,
-					type: doc.data().type,
-					userName: doc.data().userName,
-				})
-
-				db.doc(`/messages/${doc.id}`).update({ read: true });
-			})
-			return res.status(200).json(messages);
-		})
-		.catch(err => {
-			return res.status(500).json({ err: err.code });
-		})
-}
-
 // send a message
 exports.sendMessage = (req, res) => {
 	// create new message
@@ -64,7 +39,6 @@ exports.sendMessage = (req, res) => {
 		uid: req.body.senderId,
 		type: req.body.type,
 		sent: new Date().toISOString(),
-		read: false
 	}
 
 	// add the message to messages collection and return the result
